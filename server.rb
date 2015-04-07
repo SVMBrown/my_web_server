@@ -14,18 +14,8 @@ loop do                                             # Server runs forever
     lines << line
   end
   puts lines                                        # Output the full request to stdout
-
-  response = "
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>My First Server</title>
-  </head>
-  <body>
-    <a href='http://www.google.ca'>GOOGLE!</a>
-    <p>Hello World</p>
-  </body>
-</html>"
+  filename = "index.html"
+  response = File.read(filename)
   client.puts(response)                       # Output the current time to the client
   client.close                                      # Disconnect from the client
 end
