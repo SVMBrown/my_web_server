@@ -10,12 +10,29 @@ loop do                                             # Server runs forever
   client = server.accept                            # Wait for a client to connect. Accept returns a TCPSocket
 
   lines = []
-  while (line = client.gets.chomp) && !line.empty?  # Read the request and collect it until it's empty
+  while (line = client.gets) && !line.empty?  # Read the request and collect it until it's empty
     lines << line
   end
   puts lines                                        # Output the full request to stdout
-  filename = "index.html"
-  response = File.read(filename)
+  #filename = "index.html"
+  header_array = []
+  filename = lines[0].gsub(/GET \//, '').gsub(/\ HTTP.*/, '')
+  if File.exists?(filename)
+    response_body = File.read(filename)
+    header_array << "HTTP/1.1 200 OK"
+    header_array << "Content-Type: text/html"
+  else
+    response_body = "File not found\n"
+    header_array << "HTTP/1.1 404 Not Found"
+    header_array << "text/plain"
+  end
+  header_array << "Content-Length: #{response_body.length}"
+  header_array << "Connection: close"
+  header = header_array.join("\r\n")
+  response_array = []
+  response_array << header
+  response_array << response_body
+  response = response_array.join("\r\n\r\n")
   client.puts(response)                       # Output the current time to the client
   client.close                                      # Disconnect from the client
 end
